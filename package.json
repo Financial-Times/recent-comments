@@ -1,0 +1,18 @@
+{
+  "name": "recent-comments",
+  "private": true,
+  "version": "1.0.0",
+  "description": "An API used for retrieving latest comments for a specific site and with a certain tagName..",
+  "author": "Dragos Digulescu <dragos.digulescu@iquestgroup.com> (https://github.com/ddigulescu)",
+  "license": "ISC",
+  "dependencies": {
+    "lf-activity-stream": "^1.2.0",
+    "pg": "^4.4.3",
+    "pg-hstore": "^2.3.2",
+    "request": "^2.65.0",
+    "sequelize": "^3.13.0"
+  },
+  "devDependencies": {
+    "babel-eslint": "^4.1.3"
+  }
+}
