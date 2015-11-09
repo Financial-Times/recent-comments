@@ -15,6 +15,6 @@ models.article.sync({force: true})
 		console.log('tags table synced');
 		return models.articleTag.sync({force: true});
 	})
-    .then(() => {
+	.then(() => {
 		return console.log('article_tags table synced');
-    });
+	});

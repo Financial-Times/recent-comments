@@ -1,13 +1,16 @@
 'use strict';
 const lfActivityStream = require('lf-activity-stream');
 const models = require('./models');
+const config = require('./env');
 const suds = require('./services/suds');
 
-const lfClient = new lfActivityStream(process.env['lfNetwork'], process.env['lfNetworkSecret']);
+const lfClient = new lfActivityStream(config.livefyre.network.name, config.livefyre.network.key);
 
 const Article = models.article;
 const Comment = models.comment;
 const Tag = models.tag;
+
+let lastEventId = 0;
 
 
 
@@ -22,7 +25,7 @@ function handleArticle(article) {
 }
 
 function handleComment(comment) {
-	return Comment.upsert(comment, {validate: true});
+	return Comment.findCreateFind({where: {commentId: comment.commentId}, defaults: comment});
 }
 
 function findTags(tags) {
@@ -34,11 +37,12 @@ function findTags(tags) {
 }
 function getCommentData(comment, eventId) {
 	return {
-		commentId: comment.commentId,
+		commentId: parseInt(comment.commentId, 10),
 		eventId: eventId,
 		bodyHtml: comment.content,
-		createdAt: new Date(comment.timestamp * 1000),
-		updatedAt: new Date(comment.timestamp * 1000)
+		displayName: comment.author.displayName,
+		createdAt: new Date(comment.createdAt * 1000),
+		updatedAt: new Date(comment.updatedAt * 1000)
 	};
 }
 function getArticleData(article) {
@@ -53,6 +57,12 @@ function getArticleData(article) {
 
 /*eslint-disable no-console */
 function handleActivityEvent(error, data, lastEventId) {
+	if (error || !data) {
+		setTimeout(() => {
+			lfClient.makeRequest(0, handleActivityEvent);
+		}, 5000);
+		return;
+	}
 	data.forEach(item => {
 		let tags = null;
 		let article = getArticleData(item.article);
@@ -66,14 +76,15 @@ function handleActivityEvent(error, data, lastEventId) {
 			}).then(tagInstances => {
 				return handleArticle(article).spread(articleInstance => {
 					comment.articleId = articleInstance.id;
-					handleComment(comment).then(created => {
-						console.log(created);
+					handleComment(comment).spread((commentInstance, created)=> {
+						if(!created) {
+							return commentInstance.set(comment);
+						}
+						console.log(`Comment with id ${comment.commentId} handled`);
 					}).catch(error => {
 						console.log(error);
 					});
-					articleInstance.setTags(tagInstances).then(()=> {
-						console.log('Tags associated successfully');
-					}).catch(error => {
+					articleInstance.setTags(tagInstances).catch(error => {
 						console.log(error);
 					});
 				});
@@ -84,5 +95,13 @@ function handleActivityEvent(error, data, lastEventId) {
 }
 /*eslint-enable no-console*/
 
-
-lfClient.makeRequest(1444921328781236, handleActivityEvent);
+models.sequelize.query(`SELECT event_id FROM comments ORDER BY updated_at DESC LIMIT 1`, {
+	type: models.sequelize.QueryTypes.SELECT
+}).then(event => {
+	if (event.length) {
+		lastEventId = event[0].event_id;
+	}
+	lfClient.makeRequest(lastEventId, handleActivityEvent);
+}).catch(() => {
+	lfClient.makeRequest(lastEventId, handleActivityEvent);
+});
