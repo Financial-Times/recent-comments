@@ -1,13 +1,13 @@
 {
   "name": "recent-comments",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An API used for retrieving latest comments for a specific site and with a certain tagName..",
   "author": "Dragos Digulescu <dragos.digulescu@iquestgroup.com> (https://github.com/ddigulescu)",
   "license": "ISC",
   "scripts": {
-	"worker": "node --harmony worker.js",
-	"web": "node --harmony web.js"
+	"worker": "node worker.js",
+	"web": "node web.js"
   },
   "dependencies": {
     "express": "^4.13.3",
