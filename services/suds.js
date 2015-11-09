@@ -1,15 +1,11 @@
 'use strict';
 const request = require('request');
-
-const sudsUrl = [
-	'http://',
-	'session-user-data-service-test.herokuapp.com/v1/livefyre/metadata'
-].join('');
+const config = require('../env');
 
 module.exports = (articleId, url) => {
 	return new Promise((resolve, reject) => {
 		request({
-			url: sudsUrl,
+			url: config.suds.url,
 			qs: {articleId, url}
 		}, (error, response, body) => {
 			if (error || response.statusCode != 200) {

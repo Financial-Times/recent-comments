@@ -14,7 +14,7 @@ const config = {
 		}
 	},
 	suds: {
-		url: 'session-user-data-service-test.herokuapp.com/v1/livefyre/metadata'
+		url: process.env['SUDS_URL']
 	}
 };
 
