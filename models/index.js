@@ -4,7 +4,12 @@ const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const config = require('../env');
-const sequelize = new Sequelize(config.db.url, config.db.options);
+const sequelize = new Sequelize(config.db.url, {
+	logging: false,
+	dialectOptions: {
+		ssl: true
+	}
+});
 const db = {};
 
 fs

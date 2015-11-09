@@ -8,10 +8,7 @@ const config = {
 		}
 	},
 	db: {
-		url: process.env['DATABASE_URL'],
-		options: {
-			logging: process.env['DB_LOGGING']
-		}
+		url: process.env['DATABASE_URL']
 	},
 	suds: {
 		url: process.env['SUDS_URL']
