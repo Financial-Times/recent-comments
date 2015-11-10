@@ -6,6 +6,11 @@ const Sequelize = require('sequelize');
 const config = require('../env');
 const sequelize = new Sequelize(config.db.url, {
 	logging: false,
+	pool: {
+		max: 20,
+		min: 0,
+		idle: 100
+	},
 	dialectOptions: {
 		ssl: true
 	}
