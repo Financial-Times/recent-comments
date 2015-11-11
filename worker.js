@@ -41,6 +41,7 @@ function getCommentData(comment, eventId) {
 		eventId: eventId,
 		bodyHtml: comment.content,
 		displayName: comment.author.displayName,
+		visibility: comment.visibility,
 		createdAt: new Date(comment.createdAt * 1000),
 		updatedAt: new Date(comment.updatedAt * 1000)
 	};
@@ -78,9 +79,11 @@ function handleActivityEvent(error, data, lastEventId) {
 					comment.articleId = articleInstance.id;
 					handleComment(comment).spread((commentInstance, created)=> {
 						if(!created) {
-							return commentInstance.set(comment);
+							return commentInstance.set(comment).save().then(() => {
+								console.log(`Comment with id ${comment.commentId} updated`);
+							});
 						}
-						console.log(`Comment with id ${comment.commentId} handled`);
+						console.log(`Comment with id ${comment.commentId} inserted`);
 					}).catch(error => {
 						console.log(error);
 					});

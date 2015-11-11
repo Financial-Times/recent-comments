@@ -23,6 +23,9 @@ module.exports = (sequelize, DataTypes) => {
 			type: DataTypes.STRING,
 			field: 'display_name'
 		},
+		visibility: {
+			type: DataTypes.INTEGER
+		},
 		createdAt: {
 			type: DataTypes.DATE,
 			field: 'created_at'

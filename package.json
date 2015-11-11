@@ -6,12 +6,12 @@
   "author": "Dragos Digulescu <dragos.digulescu@iquestgroup.com> (https://github.com/ddigulescu)",
   "license": "ISC",
   "scripts": {
-	"worker": "node worker.js",
-	"web": "node web.js"
+    "worker": "node worker.js",
+    "web": "node web.js"
   },
   "dependencies": {
     "express": "^4.13.3",
-    "lf-activity-stream": "^1.3.0",
+    "lf-activity-stream": "^1.3.1",
     "pg": "^4.4.3",
     "pg-hstore": "^2.3.2",
     "request": "^2.65.0",

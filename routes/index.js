@@ -9,7 +9,7 @@ router.get('/v1/recent-comments', (req, res) => {
 	if ( !siteId || !tag ) {
 		return res.send('Both siteid and tagname params must be set.');
 	}
-	let count = 25;
+	let count = 10;
 	if (req.query.hasOwnProperty('count')) {
 		let intCount = parseInt(req.query.count, 10);
 		count = (intCount < 101) ? intCount : 100;
@@ -31,7 +31,8 @@ router.get('/v1/recent-comments', (req, res) => {
                 LEFT JOIN tags
                     ON tags.id = article_tags.tag_id
                 WHERE
-                	articles.site_id = :siteId
+                	comments.visibility = :vis
+                	AND articles.site_id = :siteId
                 	AND tags.name = :tagName
                 ORDER BY comments.created_at DESC
                 LIMIT :count
@@ -40,6 +41,7 @@ router.get('/v1/recent-comments', (req, res) => {
 		{ replacements: {
 			siteId: siteId,
 			tagName: tag,
+			vis: 1,
 			count: count
 		}, type: models.sequelize.QueryTypes.SELECT
 		}).then(comments => {
