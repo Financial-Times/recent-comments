@@ -7,9 +7,9 @@ const config = require('../env');
 const sequelize = new Sequelize(config.db.url, {
 	logging: false,
 	pool: {
-		max: 20,
+		max: 10,
 		min: 0,
-		idle: 5
+		idle: 1000
 	},
 	dialectOptions: {
 		ssl: config.db.ssl
