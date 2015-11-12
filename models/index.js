@@ -9,10 +9,10 @@ const sequelize = new Sequelize(config.db.url, {
 	pool: {
 		max: 20,
 		min: 0,
-		idle: 100
+		idle: 5
 	},
 	dialectOptions: {
-		ssl: true
+		ssl: config.db.ssl
 	}
 });
 const db = {};
