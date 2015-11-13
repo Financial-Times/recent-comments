@@ -57,17 +57,17 @@ function getArticleData(article) {
 
 
 /*eslint-disable no-console */
-function handleActivityEvent(error, data, lastEventId) {
-	if (error || !data) {
+function handleActivityEvent(error, data, lastCalledEventId) {
+	if (error || !(data instanceof Array) || data.length == 0) {
 		setTimeout(() => {
-			lfClient.makeRequest(0, handleActivityEvent);
+			lfClient.makeRequest(lastEventId, handleActivityEvent);
 		}, 5000);
 		return;
 	}
 	data.forEach(item => {
 		let tags = null;
 		let article = getArticleData(item.article);
-		let comment = getCommentData(item.comment, lastEventId);
+		let comment = getCommentData(item.comment, lastCalledEventId);
 		suds(item.article.articleId, item.article.url)
 			.then(res  => {
 				tags = JSON.parse(res.body);
