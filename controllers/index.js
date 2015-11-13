@@ -11,7 +11,7 @@ exports.recentComments = (req, res) => {
 	let count = 10;
 	if (req.query.hasOwnProperty('count') && req.query.count) {
 		let intCount = parseInt(req.query.count, 10);
-		if (!isNaN(intCount)) {
+		if (!isNaN(intCount) && intCount > 0) {
 			count = (intCount < 101) ? intCount : 100;
 		}
 	}
