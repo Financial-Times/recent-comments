@@ -59,9 +59,7 @@ function getArticleData(article) {
 /*eslint-disable no-console */
 function handleActivityEvent(error, data, lastCalledEventId) {
 	if (error || !(data instanceof Array) || data.length == 0) {
-		setTimeout(() => {
-			lfClient.makeRequest(lastEventId, handleActivityEvent);
-		}, 5000);
+		console.log(error);
 		return;
 	}
 	data.forEach(item => {
