@@ -1,10 +1,17 @@
 'use strict';
+
 const lfActivityStream = require('lf-activity-stream');
 const models = require('./models');
 const config = require('./env');
 const suds = require('./services/suds');
+const iron_mq = require('iron_mq');
 
 const lfClient = new lfActivityStream(config.livefyre.network.name, config.livefyre.network.key);
+const imq = new iron_mq.Client({
+	token: config.ironmq.token,
+	project_id: config.ironmq.projectId
+});
+const queue = imq.queue('health');
 
 const Article = models.article;
 const Comment = models.comment;
@@ -59,50 +66,73 @@ function getArticleData(article) {
 /*eslint-disable no-console */
 function handleActivityEvent(error, data, lastCalledEventId) {
 	if (error || !(data instanceof Array) || data.length == 0) {
-		console.log(error);
-		return;
-	}
-	data.forEach(item => {
-		let tags = null;
-		let article = getArticleData(item.article);
-		let comment = getCommentData(item.comment, lastCalledEventId);
-		suds(item.article.articleId, item.article.url)
-			.then(res  => {
-				tags = JSON.parse(res.body);
-				return handleTags(tags);
-			}).then(() => {
-				return findTags(tags);
-			}).then(tagInstances => {
-				return handleArticle(article).spread(articleInstance => {
-					comment.articleId = articleInstance.id;
-					handleComment(comment).spread((commentInstance, created)=> {
-						if(!created) {
-							return commentInstance.set(comment).save().then(() => {
-								console.log(`Comment with id ${comment.commentId} updated`);
-							});
-						}
-						console.log(`Comment with id ${comment.commentId} inserted`);
-					}).catch(error => {
-						console.log(error);
+		queue.post(JSON.stringify({
+			status: false,
+			error: error
+		}), error => {
+			if (error) {
+				console.log('Cannot post to IronMq Service!', error);
+			}
+		});
+	} else {
+		queue.post(JSON.stringify({
+			status: true
+		}), error => {
+			if(error) {
+				console.log('Cannot post to IronMq Service!', error);
+			}
+		});
+		data.forEach(item => {
+			let tags = null;
+			let article = getArticleData(item.article);
+			let comment = getCommentData(item.comment, lastCalledEventId);
+			suds(item.article.articleId, item.article.url)
+				.then(res  => {
+					tags = JSON.parse(res.body);
+					return handleTags(tags);
+				}).then(() => {
+					return findTags(tags);
+				}).then(tagInstances => {
+					return handleArticle(article).spread(articleInstance => {
+						comment.articleId = articleInstance.id;
+						handleComment(comment).spread((commentInstance, created)=> {
+							console.log('articleId', comment.articleId);
+							console.log('created', created);
+							if (!created) {
+								return commentInstance.set(comment).save().then(() => {
+									console.log(`Comment with id ${comment.commentId} updated`);
+								});
+							}
+							console.log(`Comment with id ${comment.commentId} inserted`);
+						}).catch(error => {
+							console.log(error);
+						});
+						articleInstance.setTags(tagInstances).catch(error => {
+							console.log(error);
+						});
 					});
-					articleInstance.setTags(tagInstances).catch(error => {
-						console.log(error);
-					});
+				}).catch(err => {
+					console.log(err);
 				});
-			}).catch(err => {
-				console.log(err);
-			});
-	});
-}
-/*eslint-enable no-console*/
-
-models.sequelize.query(`SELECT event_id FROM comments ORDER BY updated_at DESC LIMIT 1`, {
-	type: models.sequelize.QueryTypes.SELECT
-}).then(event => {
-	if (event.length) {
-		lastEventId = event[0].event_id;
+		});
 	}
-	lfClient.makeRequest(lastEventId, handleActivityEvent);
-}).catch(() => {
-	lfClient.makeRequest(lastEventId, handleActivityEvent);
+}
+
+queue.post(JSON.stringify({
+	status: true
+}), error => {
+	if(error) {
+		console.log('Cannot post to IronMq Service!', error);
+	}
+	models.sequelize.query(`SELECT event_id FROM comments ORDER BY updated_at DESC LIMIT 1`, {
+		type: models.sequelize.QueryTypes.SELECT
+	}).then(event => {
+		if (event.length) {
+			lastEventId = event[0].event_id;
+		}
+		lfClient.makeRequest(lastEventId, handleActivityEvent);
+	}).catch(() => {
+		lfClient.makeRequest(lastEventId, handleActivityEvent);
+	});
 });
+/*eslint-enable no-console*/

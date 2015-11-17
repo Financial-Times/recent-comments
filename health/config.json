@@ -4,6 +4,7 @@
   "checks": [
 	"db",
 	"livefyreApi",
-	"suds"
+	"suds",
+	"worker"
   ]
 }

@@ -5,9 +5,9 @@ const _ = require('lodash');
 const config = require('../env');
 const dbUrl = `${config.db.url}?ssl=${config.db.ssl}`;
 
-let healthCheckModel = {
+const healthCheckModel = {
 	name: 'Postgresql DB connection',
-	ok: true,
+	ok: false,
 	technicalSummary: 'Postgresql DB is used to store the comments from livefyre activity stream',
 	severity: 1,
 	businessImpact: 'Recent comments is down',
@@ -21,13 +21,7 @@ module.exports = () => {
 		let client = new pg.Client(dbUrl);
 		client.connect(error => {
 			healthCheckModel.lastUpdated = new Date().toISOString();
-			if (error) {
-				healthCheckModel.ok = false;
-				healthCheckModel.checkOutput = 'Connection to postgres is down. Please check the server';
-			} else {
-				healthCheckModel.ok = true;
-				healthCheckModel.checkOutput = 'Connection to postgres is functional';
-			}
+			healthCheckModel.ok = !error;
 			resolve(_.pick(healthCheckModel, ['name', 'ok', 'lastUpdated']));
 			client.end();
 		});

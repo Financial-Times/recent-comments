@@ -1,6 +1,12 @@
 'use strict';
 const models = require('../models');
 const health = require('../health');
+const healthModel = {
+	schemaVersion: 1,
+	name: 'recent-comments',
+	description: 'recent-comments-test',
+	checks: []
+};
 
 exports.recentComments = (req, res) => {
 	let siteId = req.query.siteid;
@@ -17,13 +23,13 @@ exports.recentComments = (req, res) => {
 	}
 	let sqlQuery = `
                 SELECT
-                    comments.comment_id AS "commentId",
-                    comments.body_html AS "bodyHtml",
-                    EXTRACT(EPOCH FROM comments.created_at AT TIME ZONE 'utc') * 1000 AS "createdAt",
-                    comments.display_name AS "displayName",
-                    articles.id AS "articleId",
-                    articles.url AS "url",
-                    articles.title AS "title"
+                    comments.comment_id AS 'commentId',
+                    comments.body_html AS 'bodyHtml',
+                    EXTRACT(EPOCH FROM comments.created_at AT TIME ZONE 'utc') * 1000 AS 'createdAt',
+                    comments.display_name AS 'displayName',
+                    articles.id AS 'articleId',
+                    articles.url AS 'url',
+                    articles.title AS 'title'
                 FROM comments
                 LEFT JOIN articles
                     ON articles.id = comments.article_id
@@ -61,7 +67,8 @@ exports.about = (req, res) => {
 
 exports.health = (req, res) => {
 	health.check().then(result => {
-		res.json(result);
+		healthModel.checks = result;
+		res.json(healthModel);
 	}).catch(error => {
 		res.json(error);
 	});
