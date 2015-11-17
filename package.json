@@ -10,6 +10,7 @@
     "web": "node web.js"
   },
   "dependencies": {
+    "cheerio": "^0.19.0",
     "express": "^4.13.3",
     "iron_mq": "^0.9.1",
     "lf-activity-stream": "^1.4.2",

@@ -4,6 +4,7 @@ const lfActivityStream = require('lf-activity-stream');
 const models = require('./models');
 const config = require('./env');
 const suds = require('./services/suds');
+const cheerio = require('cheerio');
 const iron_mq = require('iron_mq');
 
 const lfClient = new lfActivityStream(config.livefyre.network.name, config.livefyre.network.key);
@@ -42,88 +43,90 @@ function findTags(tags) {
 		}
 	}});
 }
+
 function getCommentData(comment, eventId) {
 	return {
 		commentId: parseInt(comment.commentId, 10),
 		eventId: eventId,
-		bodyHtml: comment.content,
+		bodyHtml: cheerio.load(comment.content)('p').children().remove().end().text(),
 		displayName: comment.author.displayName,
 		visibility: comment.visibility,
 		createdAt: new Date(comment.createdAt * 1000),
 		updatedAt: new Date(comment.updatedAt * 1000)
 	};
 }
+
 function getArticleData(article) {
 	return {
 		id: article.articleId,
 		siteId: article.siteId,
 		title: article.title,
-		url: article.url
+		url: encodeURIComponent(article.url)
 	};
 }
 
-
 /*eslint-disable no-console */
+function pushMessageToQueue(msgObject, callback) {
+	queue.post(JSON.stringify(msgObject), error => {
+		if (error) {
+			console.log('Cannot post to IronMq Service!', error);
+		}
+		if(typeof callback == 'function') {
+			callback();
+		}
+	});
+}
+
 function handleActivityEvent(error, data, lastCalledEventId) {
 	if (error || !(data instanceof Array) || data.length == 0) {
-		queue.post(JSON.stringify({
+		pushMessageToQueue({
 			status: false,
 			error: error
-		}), error => {
-			if (error) {
-				console.log('Cannot post to IronMq Service!', error);
-			}
 		});
 	} else {
-		queue.post(JSON.stringify({
+		pushMessageToQueue({
 			status: true
-		}), error => {
-			if(error) {
-				console.log('Cannot post to IronMq Service!', error);
-			}
 		});
 		data.forEach(item => {
-			let tags = null;
-			let article = getArticleData(item.article);
-			let comment = getCommentData(item.comment, lastCalledEventId);
-			suds(item.article.articleId, item.article.url)
-				.then(res  => {
-					tags = JSON.parse(res.body);
-					return handleTags(tags);
-				}).then(() => {
-					return findTags(tags);
-				}).then(tagInstances => {
-					return handleArticle(article).spread(articleInstance => {
-						comment.articleId = articleInstance.id;
-						handleComment(comment).spread((commentInstance, created)=> {
-							console.log('articleId', comment.articleId);
-							console.log('created', created);
-							if (!created) {
-								return commentInstance.set(comment).save().then(() => {
-									console.log(`Comment with id ${comment.commentId} updated`);
-								});
-							}
-							console.log(`Comment with id ${comment.commentId} inserted`);
-						}).catch(error => {
-							console.log(error);
+			if(item.article.url.indexOf('/liveblogs/') === -1 && item.article.url.indexOf('/marketslive/') === -1) {
+				let tags = null;
+				let article = getArticleData(item.article);
+				let comment = getCommentData(item.comment, lastCalledEventId);
+				suds(item.article.articleId, item.article.url)
+					.then(res  => {
+						tags = JSON.parse(res.body);
+						return handleTags(tags);
+					}).then(() => {
+						return findTags(tags);
+					}).then(tagInstances => {
+						return handleArticle(article).spread(articleInstance => {
+							comment.articleId = articleInstance.id;
+							handleComment(comment).spread((commentInstance, created)=> {
+								console.log('articleId', comment.articleId);
+								console.log('created', created);
+								if (!created) {
+									return commentInstance.set(comment).save().then(() => {
+										console.log(`Comment with id ${comment.commentId} updated`);
+									});
+								}
+								console.log(`Comment with id ${comment.commentId} inserted`);
+							}).catch(error => {
+								console.log(error);
+							});
+							articleInstance.setTags(tagInstances).catch(error => {
+								console.log(error);
+							});
 						});
-						articleInstance.setTags(tagInstances).catch(error => {
-							console.log(error);
-						});
+					}).catch(err => {
+						console.log(err);
 					});
-				}).catch(err => {
-					console.log(err);
-				});
+			}
 		});
 	}
 }
+/*eslint-enable no-console*/
 
-queue.post(JSON.stringify({
-	status: true
-}), error => {
-	if(error) {
-		console.log('Cannot post to IronMq Service!', error);
-	}
+function init() {
 	models.sequelize.query(`SELECT event_id FROM comments ORDER BY updated_at DESC LIMIT 1`, {
 		type: models.sequelize.QueryTypes.SELECT
 	}).then(event => {
@@ -134,5 +137,6 @@ queue.post(JSON.stringify({
 	}).catch(() => {
 		lfClient.makeRequest(lastEventId, handleActivityEvent);
 	});
-});
-/*eslint-enable no-console*/
+}
+
+pushMessageToQueue({status: true}, init);
