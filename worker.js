@@ -48,7 +48,7 @@ function getCommentData(comment, eventId) {
 	return {
 		commentId: parseInt(comment.commentId, 10),
 		eventId: eventId,
-		bodyHtml: cheerio.load(comment.content)('p').children().remove().end().text(),
+		bodyHtml: cheerio.load(comment.content)('p').children().remove().end().text().trim(),
 		displayName: comment.author.displayName,
 		visibility: comment.visibility,
 		createdAt: new Date(comment.createdAt * 1000),
