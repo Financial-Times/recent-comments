@@ -61,7 +61,7 @@ function getArticleData(article) {
 		id: article.articleId,
 		siteId: article.siteId,
 		title: article.title,
-		url: encodeURIComponent(article.url)
+		url: article.url
 	};
 }
 
