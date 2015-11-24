@@ -38,7 +38,7 @@ module.exports = () => {
 				healthCheckModel.checkOutput = error;
 			}
 			if (typeof body == 'undefined') {
-				healthCheckModel.checkOutput = "Unknown state, no messages in the queue.";
+				healthCheckModel.checkOutput = 'Unknown state, no messages in the queue.';
 			} else {
 				try {
 					let message = JSON.parse(body.body);
