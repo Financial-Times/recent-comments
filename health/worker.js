@@ -13,7 +13,7 @@ const queue = imq.queue('health');
 const healthCheckModel = {
 	name: 'Worker listening to LiveFyre Activity Stream',
 	ok: false,
-	technicalSummary: 'Handles th LiveFyre Activity Stream',
+	technicalSummary: 'Handles the LiveFyre Activity Stream',
 	severity: 2,
 	businessImpact: 'No comments will be handled',
 	checkOutput: '',
@@ -26,35 +26,38 @@ function checkHealth(cb) {
 		if(error) {
 			return cb(error);
 		}
-		setTimeout(() => {
-			checkHealth(cb);
-		}, 15000);
 		return cb(null, body);
 	});
 }
 
-checkHealth((error, body) => {
-	if(error) {
-		healthCheckModel.ok = false;
-		healthCheckModel.checkOutput = error;
-	}
-	if(body) {
-		let message = JSON.parse(body.body);
-		if(message.status === false) {
-			healthCheckModel.checkOutput = message.error;
-		}
-		healthCheckModel.ok = message.status;
-		healthCheckModel.lastUpdated = new Date(body.available_at).toISOString();
-	}
-});
-
 module.exports = () => {
 	return new Promise(resolve => {
-		if ( healthCheckModel.ok === true ) {
-			resolve(_.pick(healthCheckModel, ['name', 'ok', 'lastUpdated']));
-		} else {
-			resolve(healthCheckModel);
-		}
+		checkHealth((error, body) => {
+			if (error) {
+				healthCheckModel.ok = false;
+				healthCheckModel.checkOutput = error;
+			}
+			if (typeof body == 'undefined') {
+				healthCheckModel.checkOutput = "Unknown state, no messages in the queue.";
+			} else {
+				try {
+					let message = JSON.parse(body.body);
+					if (message.status === false) {
+						healthCheckModel.checkOutput = `[IronMq Error] ${message.error}`;
+					}
+					healthCheckModel.ok = message.status;
+					healthCheckModel.lastUpdated = new Date(body.available_at).toISOString();
+				} catch(e) {
+					healthCheckModel.ok = false;
+					healthCheckModel.checkOutput = e;
+				}
+			}
+			if (healthCheckModel.ok === true) {
+				resolve(_.pick(healthCheckModel, ['name', 'ok', 'lastUpdated']));
+			} else {
+				resolve(healthCheckModel);
+			}
+		});
 	});
 };
 
