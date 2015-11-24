@@ -12,7 +12,12 @@ module.exports = (articleId, url) => {
 			if (error || response.statusCode != 200) {
 				return reject({body: error || body, response});
 			}
-			return resolve({ response, body });
+			try {
+				let tags =  JSON.parse(body);
+				return resolve(tags);
+			} catch(error) {
+				return reject(error);
+			}
 		});
 	});
 };
