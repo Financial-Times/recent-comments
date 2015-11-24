@@ -1,0 +1,50 @@
+[
+  {
+	"collectionId": "111111",
+	"article":
+	{ "url": "http://www.ft.com/cms/s/0/cb88a5d0-8c6c-11e5-a549-b89a1dfede9b.html",
+	  "articleId": "cb88a5d0-8c6c-11e5-a549-b89a1dfede9b",
+	  "siteId": "123123",
+	  "title": "The title of the article - FT.com"
+	},
+	"comment":
+	{
+	  "parentId": null,
+	  "author":
+	  {
+		"displayName": "testing-test",
+		"tags": [],
+		"type": 1
+	  },
+	  "content": "<p>testing 1</p>",
+	  "createdAt": 1447862530,
+	  "updatedAt": 1447862534,
+	  "commentId": 2,
+	  "visibility": 1
+	}
+  },
+  {
+	"collectionId": "102153590",
+	"article":
+	{ "url": "http://www.ft.com/cms/s/0/53cdbd8a-7c85-11e3-b514-00144feabdc0.html",
+	  "articleId": "53cdbd8a-7c85-11e3-b514-00144feabdc0",
+	  "siteId": "359891",
+	  "title": "Google to launch its Moto X smartphone in UK, France and Germany - FT.com"
+	},
+	"comment":
+	{
+	  "parentId": null,
+	  "author":
+	  {
+		"displayName": "QA Bot #1",
+		"tags": [],
+		"type": 1
+	  },
+	  "content": "<p>Automated message 16:42:45 20/11/2015</p>",
+	  "createdAt": 1448030572,
+	  "updatedAt": 1448030573,
+	  "commentId": "417043940",
+	  "visibility": 1
+	}
+  }
+]
