@@ -4,8 +4,7 @@ const recentComments = require('../lib/recentComments');
 const eventActivityItem = require('./lfCollectionMock')[1];
 const pg = require('pg');
 const config = require('../env');
-const env = process.env['ENV'];
-const dbUrl = `${config.db[env].url}?ssl=${config.db.ssl}`;
+const dbUrl = `${config.db.url}?ssl=${config.db.ssl}`;
 const expect = require('chai').expect;
 
 let client = new pg.Client(dbUrl);

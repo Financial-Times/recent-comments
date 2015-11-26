@@ -4,8 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const Sequelize = require('sequelize');
 const config = require('../env');
-const env = process.env['ENV'];
-const sequelize = new Sequelize(config.db[env].url, {
+const sequelize = new Sequelize(config.db.url, {
 	logging: false,
 	pool: {
 		max: 10,

@@ -8,12 +8,7 @@ const config = {
 		}
 	},
 	db: {
-		dev: {
-			url: process.env['DATABASE_URL']
-		},
-		test: {
-			url: 'postgres://postgres@localhost:5432/recent_comments_test'
-		},
+		url: process.env['DATABASE_URL'],
 		ssl: (process.env['DATABASE_SSL'] == 'true')
 	},
 	suds: {
