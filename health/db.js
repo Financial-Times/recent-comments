@@ -22,7 +22,11 @@ module.exports = () => {
 		client.connect(error => {
 			healthCheckModel.lastUpdated = new Date().toISOString();
 			healthCheckModel.ok = !error;
-			resolve(_.pick(healthCheckModel, ['name', 'ok', 'lastUpdated']));
+			if(error) {
+				resolve(healthCheckModel);
+			} else {
+				resolve(_.pick(healthCheckModel, ['name', 'ok', 'lastUpdated']));
+			}
 			client.end();
 		});
 	});

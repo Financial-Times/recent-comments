@@ -46,3 +46,18 @@ exports.health = (req, res) => {
 		res.json(error);
 	});
 };
+
+exports.gtg = (req, res) => {
+	health.check().then((result) => {
+		let reducer = (status, service) => {
+			if ( service.ok === false ) {
+				status = false;
+			}
+			return status;
+		};
+		let statusCheck = result.reduce(reducer, true);
+		statusCheck ? res.send('Ok') : res.status(503).send('Not ok');
+	}).catch(() => {
+		res.status(503).send('Not ok');
+	});
+};
