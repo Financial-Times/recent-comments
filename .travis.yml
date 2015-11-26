@@ -1,0 +1,13 @@
+language: node_js
+node_js:
+- 4.2.2
+services:
+- postgresql
+script:
+- npm test
+env:
+  matrix:
+  - ENV=test
+  - secure: imRPVYC9mvmy0AW/GIgwahYmVtUvt0uDU+Pvtn9RD073eDrdZheTzDMX6oYPKj6MbbdQhkmbKbkPL/TKwTCygnPIN07vN8pZwzawsxwWrOkZkywOhlIsTHxBCJvJhZQ/VcnPXrdhI2+iCbgF+l5IoldXA8kO0mwpCKQzXF0V276C0TSsXamC//W50Mlu44O2N9wyUtUeCB9/Keys+7IfqmSVdAykwNpYIAVJSgN/sLDheKryBkm22eBNDcNp/DtrFVwAWpQZ26St/S4ZEgWR9I9iLUmdI5j9VDNM5I5OYPKevhY2dA7N3EzKoyabUrxLSUKVhVzIvMkPKo5diDLd0lt98rjvXDZhxl7+hct/YRNS4vJCO7uNSbmj8PUhyG1zWPYzVzKV9BhCBe1JhobU69x+PclmIOM2o1/dSnq0hs6lGSFny1X+X7SYKJ0NjjNX3OyZBbOyt6FP9Q2gFJRRSHXAUl009JLtYda7Dx9rqfBaJGO3PFDhBYeWnC2O0Hd5R6fXuLeVXxgMQsp0yUAzSaftL3FlbvIOc7UGa5Txcn4Nss2Up6I4zGrzZgrmliyCvaMw4FxgFQGQwT9SjL5YFTyIMTfmtyhzWhrAW3XlrxTiuIeVNDvXyIndGDPjM4Rm19UR9+VTEOXZ3Riv1YRgAqQ9pBiyD96Mp/jb2nY5ZIw=
+before_script:
+- psql -c 'create database recent_comments_test;' -U rc-test
