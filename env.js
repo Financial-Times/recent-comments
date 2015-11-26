@@ -12,7 +12,7 @@ const config = {
 			url: process.env['DATABASE_URL']
 		},
 		test: {
-			url: 'postgres://rc-test@localhost:5432/recent_comments_test'
+			url: 'postgres://postgres@localhost:5432/recent_comments_test'
 		},
 		ssl: (process.env['DATABASE_SSL'] == 'true')
 	},
