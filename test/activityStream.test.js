@@ -1,7 +1,7 @@
 'use strict';
 
 const expect = require('chai').expect;
-const config = require('../env');
+const config = require('../../env');
 const lfActivityStream = require('lf-activity-stream');
 
 let lfClient = null;

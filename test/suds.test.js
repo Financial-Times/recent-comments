@@ -4,9 +4,9 @@ const chai = require('chai');
 const suds = require('../services/suds');
 const chaiAsPromised = require('chai-as-promised');
 const itemMock = require('./lfCollectionMock')[0];
-const should = chai.should();
 
 chai.use(chaiAsPromised);
+chai.should();
 
 const testData = {
 	id: itemMock.article.articleId,
