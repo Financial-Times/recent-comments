@@ -1,7 +1,8 @@
 'use strict';
 
 const expect = require('chai').expect;
-const config = require('../../env');
+const config = require('../env');
+const mockResponse = require('./lfCollectionMock');
 const lfActivityStream = require('lf-activity-stream');
 
 let lfClient = null;
@@ -10,8 +11,18 @@ let lastEventId = null;
 
 
 describe('LiveFyre Activity Stream Client', () => {
-	before(() => {
-		lfClient = new lfActivityStream(config.livefyre.network.name, config.livefyre.network.key);
+	before((done) => {
+		if(process.env['ENV'] === 'test') {
+			lfClient = {
+				networkUrn: 'test',
+				makeRequest: (id, cb) => {
+					return cb(null, mockResponse, id);
+				}
+			};
+		} else {
+			lfClient = new lfActivityStream(config.livefyre.network.name, config.livefyre.network.key);
+		}
+		done();
 	});
 	it('should be an object', () => {
 		expect(lfClient).to.be.an('object');
@@ -41,11 +52,10 @@ describe('LiveFyre Activity Stream Client', () => {
 				expect(item).to.have.all.keys(['collectionId', 'article', 'comment']);
 				expect(item.article).to.be.an('object');
 				expect(item.comment).to.be.an('object');
-				done();
 			} else {
 				expect(lfCollection).to.be.empty;
-				done(Error('collection is empty'));
 			}
+			done();
 		});
 		it('should return the last called eventId', () => {
 			expect(lastEventId).not.to.be.null;
