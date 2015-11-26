@@ -1,7 +1,7 @@
 {
   "name": "recent-comments",
   "private": true,
-  "version": "1.1.1",
+  "version": "1.2.2",
   "description": "An API used for retrieving latest comments for a specific site and with a certain tagName..",
   "author": "Dragos Digulescu <dragos.digulescu@iquestgroup.com> (https://github.com/ddigulescu)",
   "license": "ISC",
