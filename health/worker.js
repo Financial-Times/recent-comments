@@ -20,6 +20,8 @@ const healthCheckModel = {
 	panicGuide: '',
 	lastUpdated: new Date().toISOString()
 };
+let lastStatus = null;
+let lastUpdated = null;
 
 function checkHealth(cb) {
 	queue.reserve({n: 1, delete: true}, (error, body) => {
@@ -38,8 +40,13 @@ module.exports = () => {
 				healthCheckModel.checkOutput = error;
 			}
 			if (typeof body == 'undefined') {
-				healthCheckModel.ok = 'unknown';
-				healthCheckModel.checkOutput = 'Unknown state, no messages in the queue.';
+				if ( lastStatus && lastUpdated ) {
+					healthCheckModel.ok = lastStatus;
+					healthCheckModel.lastUpdated = lastUpdated;
+				} else {
+					healthCheckModel.ok = 'unknown';
+					healthCheckModel.checkOutput = 'Unknown state, no messages in the queue.';
+				}
 			} else {
 				try {
 					let message = JSON.parse(body.body);
@@ -48,6 +55,8 @@ module.exports = () => {
 					}
 					healthCheckModel.ok = message.status;
 					healthCheckModel.lastUpdated = new Date(body.available_at).toISOString();
+					lastStatus = message.status;
+					lastUpdated = new Date(body.available_at).toISOString();
 				} catch(e) {
 					healthCheckModel.ok = false;
 					healthCheckModel.checkOutput = e;
