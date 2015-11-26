@@ -13,7 +13,7 @@ app.use((error, req, res, next) => {
 });
 /*eslint-enable no-unused-vars*/
 app.use('*', (req, res) => {
-	res.send('This endpoint does not exist');
+	res.status(404).send('This endpoint does not exist');
 });
 
 server.listen(process.env.PORT || 4000);
