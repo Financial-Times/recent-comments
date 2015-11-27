@@ -40,7 +40,7 @@ module.exports = () => {
 				healthCheckModel.checkOutput = error;
 			}
 			if (typeof body == 'undefined') {
-				if ( lastStatus && lastUpdated ) {
+				if ( lastStatus !== null && lastUpdated ) {
 					healthCheckModel.ok = lastStatus;
 					healthCheckModel.lastUpdated = lastUpdated;
 				} else {
@@ -51,7 +51,7 @@ module.exports = () => {
 				try {
 					let message = JSON.parse(body.body);
 					if (message.status === false) {
-						healthCheckModel.checkOutput = `[IronMq Error] ${message.error}`;
+						healthCheckModel.checkOutput = `[Error] ${message.error}`;
 					}
 					healthCheckModel.ok = message.status;
 					healthCheckModel.lastUpdated = new Date(message.insertedAt).toISOString();
