@@ -24,7 +24,7 @@ let lastStatus = null;
 let lastUpdated = null;
 
 function checkHealth(cb) {
-	queue.reserve({n: 1, delete: true}, (error, body) => {
+	queue.reserve({n: 1}, (error, body) => {
 		if(error) {
 			return cb(error);
 		}
