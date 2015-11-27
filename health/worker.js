@@ -54,9 +54,9 @@ module.exports = () => {
 						healthCheckModel.checkOutput = `[IronMq Error] ${message.error}`;
 					}
 					healthCheckModel.ok = message.status;
-					healthCheckModel.lastUpdated = new Date(body.available_at).toISOString();
+					healthCheckModel.lastUpdated = new Date(message.insertedAt).toISOString();
 					lastStatus = message.status;
-					lastUpdated = new Date(body.available_at).toISOString();
+					lastUpdated = new Date(message.insertedAt).toISOString();
 				} catch(e) {
 					healthCheckModel.ok = false;
 					healthCheckModel.checkOutput = e;

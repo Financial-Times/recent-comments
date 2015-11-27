@@ -19,6 +19,7 @@ let lastEventId = 0;
 /*eslint-disable no-console */
 function pushMessageToQueue(msgObject, callback) {
 	queue.clear(() => {
+		msgObject.insertedAt = Date.now();
 		queue.post(JSON.stringify(msgObject), error => {
 			if (error) {
 				console.log('Cannot post to IronMq Service!', error);
