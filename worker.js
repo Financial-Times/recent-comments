@@ -5,12 +5,12 @@ const models = require('./models');
 const config = require('./env');
 const recentComments = require('./lib/recentComments');
 const iron_mq = require('iron_mq');
+const log = require('./services/logger');
 
 const lfClient = new lfActivityStream(config.livefyre.network.name, config.livefyre.network.key);
 const imq = new iron_mq.Client({
 	token: config.ironmq.token,
-	project_id: config.ironmq.projectId,
-	queue_name: 'health'
+	project_id: config.ironmq.projectId
 });
 
 const queue = imq.queue('health');
@@ -22,7 +22,7 @@ function pushMessageToQueue(msgObject, callback) {
 		msgObject.insertedAt = Date.now();
 		queue.post(JSON.stringify(msgObject), error => {
 			if (error) {
-				console.log('Cannot post to IronMq Service!', error);
+				log.error({service: 'IronMq'}, error.message);
 			}
 			if(typeof callback == 'function') {
 				callback();
@@ -41,8 +41,9 @@ function handleActivityEvent(error, data, lastCalledEventId) {
 	if (error || !(data instanceof Array) || data.length == 0) {
 		pushMessageToQueue({
 			status: false,
-			error: error
+			error: error.message
 		});
+		log.error({service: 'lfActivityStream'}, error.message || data);
 	} else {
 		processActivity(data, lastCalledEventId).then(() => {
 			pushMessageToQueue({
@@ -51,9 +52,9 @@ function handleActivityEvent(error, data, lastCalledEventId) {
 		}).catch((error) => {
 			pushMessageToQueue({
 				status: false,
-				error: error
+				error: error.message
 			});
-			console.log(error);
+			log.error({service: 'recentComments'}, error.message);
 		});
 	}
 }

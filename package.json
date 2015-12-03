@@ -9,9 +9,10 @@
     "worker": "node worker.js",
     "web": "node web.js",
     "test": "node_modules/.bin/mocha",
-	"dbsync": "node ./bin/db-sync.js"
+    "dbsync": "node ./bin/db-sync.js"
   },
   "dependencies": {
+    "bunyan": "^1.5.1",
     "cheerio": "^0.19.0",
     "express": "^4.13.3",
     "iron_mq": "^0.9.1",
