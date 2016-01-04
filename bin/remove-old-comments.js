@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-'use strict';
 
+'use strict';
 const models = require('../models');
 const log = require('../services/logger');
 
