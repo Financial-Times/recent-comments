@@ -64,7 +64,7 @@ module.exports = () => {
 				}
 			}
 			if (healthCheckModel.ok === true) {
-				resolve(_.pick(healthCheckModel, ['name', 'ok', 'lastUpdated']));
+				resolve(_.pick(healthCheckModel, ['name', 'id', 'ok', 'lastUpdated']));
 			} else {
 				resolve(healthCheckModel);
 			}

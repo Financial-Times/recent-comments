@@ -23,7 +23,7 @@ module.exports = () => {
 		suds(test.articleId, test.url).then(() => {
 			healthCheckModel.ok = true;
 			healthCheckModel.lastUpdated = new Date().toISOString();
-			resolve(_.pick(healthCheckModel, ['name', 'ok', 'lastUpdated']));
+			resolve(_.pick(healthCheckModel, ['name', 'id', 'ok', 'lastUpdated']));
 		}).catch(error => {
 			healthCheckModel.ok = false;
 			healthCheckModel.lastUpdated = new Date().toISOString();

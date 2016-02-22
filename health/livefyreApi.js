@@ -27,7 +27,7 @@ module.exports = () => {
 				resolve(healthCheckModel);
 			} else {
 				healthCheckModel.ok = true;
-				resolve(_.pick(healthCheckModel, ['name', 'ok', 'lastUpdated']));
+				resolve(_.pick(healthCheckModel, ['name', 'id', 'ok', 'lastUpdated']));
 			}
 		}, true); //don't forget to pass the last param (once = true)
 	});

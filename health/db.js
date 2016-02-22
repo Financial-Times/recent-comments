@@ -26,7 +26,7 @@ module.exports = () => {
 			if(error) {
 				resolve(healthCheckModel);
 			} else {
-				resolve(_.pick(healthCheckModel, ['name', 'ok', 'lastUpdated']));
+				resolve(_.pick(healthCheckModel, ['name', 'id', 'ok', 'lastUpdated']));
 			}
 			client.end();
 		});

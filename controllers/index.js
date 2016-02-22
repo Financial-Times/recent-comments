@@ -4,7 +4,8 @@ const health = require('../health');
 const healthModel = {
 	schemaVersion: 1,
 	name: 'recent-comments',
-	description: 'recent-comments-test',
+	systemCode: 'recent-comments',
+	description: 'recent-comments',
 	checks: []
 };
 
