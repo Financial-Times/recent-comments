@@ -12,6 +12,7 @@ const queue = imq.queue('health');
 
 const healthCheckModel = {
 	name: 'Worker listening to LiveFyre Activity Stream',
+	id: 'recent-comments-worker',
 	ok: false,
 	technicalSummary: 'Handles the LiveFyre Activity Stream',
 	severity: 2,

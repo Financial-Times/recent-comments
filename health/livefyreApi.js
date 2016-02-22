@@ -7,6 +7,7 @@ const config = require('../env');
 const lfClient = new lfActivityStream(config.livefyre.network.name, config.livefyre.network.key);
 const healthCheckModel = {
 	name: 'LiveFyre Activity stream client',
+	id: 'livefyre-stream',
 	ok: false,
 	technicalSummary: 'Client used to handle LiveFyre Activity Stream',
 	severity: 2,

@@ -7,6 +7,7 @@ const dbUrl = `${config.db.url}?ssl=${config.db.ssl}`;
 
 const healthCheckModel = {
 	name: 'Postgresql DB connection',
+	id: 'mongodb',
 	ok: false,
 	technicalSummary: 'Postgresql DB is used to store the comments from livefyre activity stream',
 	severity: 1,

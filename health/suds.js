@@ -8,6 +8,7 @@ const test = {
 };
 const healthCheckModel = {
 	name: 'SUDS API',
+	id: 'suds-api',
 	ok: false,
 	technicalSummary: 'Reads tags for articles',
 	severity: 2,
