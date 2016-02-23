@@ -7,13 +7,13 @@ const dbUrl = `${config.db.url}?ssl=${config.db.ssl}`;
 
 const healthCheckModel = {
 	name: 'Postgresql DB connection',
-	id: 'mongodb',
+	id: 'postgres',
 	ok: false,
 	technicalSummary: 'Postgresql DB is used to store the comments from livefyre activity stream',
 	severity: 1,
 	businessImpact: 'Recent comments is down',
 	checkOutput: '',
-	panicGuide: '',
+	panicGuide: 'Check database connection',
 	lastUpdated: new Date().toISOString()
 };
 
@@ -26,7 +26,7 @@ module.exports = () => {
 			if(error) {
 				resolve(healthCheckModel);
 			} else {
-				resolve(_.pick(healthCheckModel, ['name', 'id', 'ok', 'lastUpdated']));
+				resolve(_.omit(healthCheckModel, ['checkOutput']));
 			}
 			client.end();
 		});

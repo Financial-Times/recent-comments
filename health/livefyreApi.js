@@ -13,7 +13,7 @@ const healthCheckModel = {
 	severity: 2,
 	businessImpact: 'No comments will be handled',
 	checkOutput: '',
-	panicGuide: '',
+	panicGuide: 'Check the logs for worker',
 	lastUpdated: new Date().toISOString()
 };
 
@@ -27,7 +27,7 @@ module.exports = () => {
 				resolve(healthCheckModel);
 			} else {
 				healthCheckModel.ok = true;
-				resolve(_.pick(healthCheckModel, ['name', 'id', 'ok', 'lastUpdated']));
+				resolve(_.omit(healthCheckModel, ['checkOutput']));
 			}
 		}, true); //don't forget to pass the last param (once = true)
 	});

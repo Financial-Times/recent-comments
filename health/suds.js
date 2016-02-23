@@ -2,6 +2,7 @@
 
 const _ = require('lodash');
 const suds = require('../services/suds');
+const config = require('../env');
 const test = {
 	articleId: '07db6f6f-5bc5-3511-a314-01a42d61f6a2',
 	url: 'http://test.blogs.ft.com/the-world/2015/11/behat-test-title-free-post-allow-comments-5/'
@@ -14,7 +15,7 @@ const healthCheckModel = {
 	severity: 2,
 	businessImpact: `No content will be inserted to the DB`,
 	checkOutput: '',
-	panicGuide: '',
+	panicGuide: 'http://session-user-data-service-test.herokuapp.com/troubleshoot',
 	lastUpdated: new Date().toISOString()
 };
 
@@ -23,7 +24,7 @@ module.exports = () => {
 		suds(test.articleId, test.url).then(() => {
 			healthCheckModel.ok = true;
 			healthCheckModel.lastUpdated = new Date().toISOString();
-			resolve(_.pick(healthCheckModel, ['name', 'id', 'ok', 'lastUpdated']));
+			resolve(_.omit(healthCheckModel, ['checkOutput']));
 		}).catch(error => {
 			healthCheckModel.ok = false;
 			healthCheckModel.lastUpdated = new Date().toISOString();
