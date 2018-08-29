@@ -16,7 +16,7 @@
     "cheerio": "^0.19.0",
     "express": "^4.13.3",
     "iron_mq": "^0.9.1",
-    "lf-activity-stream": "^1.5.3",
+    "lf-activity-stream": "Financial-Times/lf-activity-stream#1.6.1",
     "pg": "^4.4.3",
     "pg-hstore": "^2.3.2",
     "request": "^2.65.0",
